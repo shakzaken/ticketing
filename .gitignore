@@ -1,0 +1,7 @@
+auth/node_modules
+auth/.vscode
+auth/dist
+
+orders/node_modules
+payments/node_modules
+tickets/node_modules
