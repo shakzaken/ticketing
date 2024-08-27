@@ -3,11 +3,11 @@ import  bodyParser from "body-parser"
 import mongoose from 'mongoose'
 
 import cookieSession from "cookie-session";
-import { createTicketRouter } from "./routes/create-ticket"; 
-import { getTicketsRouter } from "./routes/get-tickets";
-import { updateTicketRouter } from "./routes/update-ticket";
 import { randomBytes } from "crypto";
 import { natsWrapper } from "./nats-wrapper";
+import { TicketCreatedListener } from "./events/ticket-created-listener";
+import { createOrderRouter } from "./routes/create-order-route";
+
 
 const app = express();
 
@@ -17,30 +17,32 @@ app.use(cookieSession({
     keys:['key1','key2']
 }))
 
-app.use(createTicketRouter)
-app.use(getTicketsRouter)
-app.use(updateTicketRouter)
-
 
 setup();
 
-app.listen(3001, async () => {
-    console.log("Tickets application listen on port 3001")
+app.listen(3002, async () => {
+    console.log("Orders application listen on port 3002")
 });
+
+app.use(createOrderRouter);
 
 
 
 async function setup(){
 
-    await mongoose.connect("mongodb://127.0.0.1:27017/tickets")
+    await mongoose.connect("mongodb://127.0.0.1:27017/orders")
     console.log("connected to mongodb")
 
     const connectionId = randomBytes(4).toString('hex');
-    await natsWrapper.connect("ticketing",connectionId,'http://localhost:4222');  
+    await natsWrapper.connect("ticketing",connectionId,'http://localhost:4222');
+
+
     natsWrapper.client.on('close', ()=> {
         console.log("NATS connection closed!");
         process.exit();
     })
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM",() => natsWrapper.client.close());
+
+    new TicketCreatedListener(natsWrapper.client).listen();
 }
