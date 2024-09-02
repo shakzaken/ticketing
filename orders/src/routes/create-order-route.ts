@@ -4,9 +4,11 @@ import { UserDto } from "../common/user-dto";
 import { TicketModel } from "../models/ticket-model";
 import { OrderModel } from "../models/order-model";
 import { OrderStatus } from "../common/order-status";
+import { OrderCreatedPublisher } from "../events/order-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 const router = express.Router();
 
-const expirationTime = 1000 * 60 * 15;
+const expirationTime = 1000 * 60 * 1;
 
 router.post("/orders",requireAuth,async (req,res) => {
 
@@ -20,14 +22,31 @@ router.post("/orders",requireAuth,async (req,res) => {
             return res.status(400).send("ticketId is invalid");
         }
 
+        const orderInDB = await OrderModel.findOne({ticket:ticketId}).exec();
+        if(orderInDB != null && orderInDB.status != OrderStatus.Cancelled ){
+            return res.status(400).send("Ticket Is locked or completed")
+        }
+
         const expiration = Date.now() + expirationTime;
         const order =  new OrderModel({
-            ticketId: ticketId,
+            ticket: ticketId,
             userId: user.id,
             status: OrderStatus.Created,
             expiration: expiration
         })
         await order.save();
+
+        new OrderCreatedPublisher(natsWrapper.client).publish({
+            id: order._id.toString(),
+            userId: order.userId,
+            expiration: order.expiration,
+            status: order.status,
+            ticket:{
+                id: ticket._id,
+                title: ticket.title,
+                price: ticket.price
+            }
+        })
         return res.status(201).send(order);
 
 

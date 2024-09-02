@@ -33,6 +33,7 @@ router.post("/tickets",requireAuth, async (req,res) => {
         res.status(201).send(ticket)
 
     }catch(err){
+        console.error(err);
         res.status(500).send("something went wrong");
     }
 

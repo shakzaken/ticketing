@@ -8,6 +8,8 @@ import { getTicketsRouter } from "./routes/get-tickets";
 import { updateTicketRouter } from "./routes/update-ticket";
 import { randomBytes } from "crypto";
 import { natsWrapper } from "./nats-wrapper";
+import { OrderUpdatedListener } from "./events/order-updated-listener";
+import { OrderCreatedListener } from "./events/order-created-listener";
 
 const app = express();
 
@@ -43,4 +45,7 @@ async function setup(){
     })
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM",() => natsWrapper.client.close());
+
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderUpdatedListener(natsWrapper.client).listen();
 }

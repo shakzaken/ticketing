@@ -9,13 +9,10 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
     queueGroupName: string = "ticket-service"
     async onMessage(data: TicketCreatedData, msg: Message): Promise<void> {
         
-        const expirationTime = 1000 * 60 * 15;
-        const expiration = Date.now() + expirationTime;
         const ticket = new TicketModel({
             _id: data.id,
             title: data.title,
             price: data.price,
-            expiration: expiration
         })
         await ticket.save();
 

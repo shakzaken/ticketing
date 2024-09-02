@@ -12,7 +12,7 @@ export abstract class Publisher<T extends Event> {
 
     publish(data: T['data']){
         this.client.publish(this.subject,JSON.stringify(data), () =>{
-            console.log(`Event published`);
+            console.log(`Event ${this.subject} published`);
         })
     }
 }

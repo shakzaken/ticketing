@@ -5,10 +5,10 @@ import mongoose from 'mongoose'
 import cookieSession from "cookie-session";
 import { randomBytes } from "crypto";
 import { natsWrapper } from "./nats-wrapper";
-import { TicketCreatedListener } from "./events/ticket-created-listener";
-import { createOrderRouter } from "./routes/create-order-route";
-import { OrderExpiredListener } from "./events/order-expired-listener";
-import { PaymentSucceedListener } from "./events/payment-succeed-listener";
+import { OrderCreatedListener } from "./events/order-created-listener";
+import { OrderUpdatedListener } from "./events/order-updated-listener";
+import { createPaymentRouter } from "./routes/create-payments-route";
+
 
 
 const app = express();
@@ -20,19 +20,21 @@ app.use(cookieSession({
 }))
 
 
+app.use(createPaymentRouter);
+
 setup();
 
-app.listen(3002, async () => {
-    console.log("Orders application listen on port 3002")
+app.listen(3004, async () => {
+    console.log("Payment application listen on port 3004")
 });
 
-app.use(createOrderRouter);
+
 
 
 
 async function setup(){
 
-    await mongoose.connect("mongodb://127.0.0.1:27017/orders")
+    await mongoose.connect("mongodb://127.0.0.1:27017/payments")
     console.log("connected to mongodb")
 
     const connectionId = randomBytes(4).toString('hex');
@@ -46,7 +48,8 @@ async function setup(){
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM",() => natsWrapper.client.close());
 
-    new TicketCreatedListener(natsWrapper.client).listen();
-    new OrderExpiredListener(natsWrapper.client).listen();
-    new PaymentSucceedListener(natsWrapper.client).listen();
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderUpdatedListener(natsWrapper.client).listen();
+
+
 }

@@ -1,9 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 import { OrderStatus } from "../common/order-status";
+import { ITicket } from "./ticket-model";
 
 
 export interface IOrder {
-    ticketId: Schema.Types.ObjectId,
+    ticket: ITicket,
     userId: string,
     expiration: Date,
     status: OrderStatus
@@ -11,7 +12,7 @@ export interface IOrder {
 }
 
 const orderSchema = new Schema<IOrder>({
-    ticketId:{
+    ticket:{
         type: Schema.Types.ObjectId,
         ref:"Ticket"
     },
