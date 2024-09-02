@@ -24,6 +24,7 @@ export class PaymentSucceedListener extends Listener<PaymentSucceedEvent>{
 
             new OrderUpdatedPublisher(natsWrapper.client).publish({
                 id: order._id.toString(),
+                version:order.version,
                 ticket:{
                     id: order.ticket._id,
                     price: order.ticket.price,

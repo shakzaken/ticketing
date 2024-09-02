@@ -12,6 +12,11 @@ const paymentSchema = new Schema<IPayment>({
         type: String,
         required: true
     }
-})
+},{versionKey:"version"})
+
+paymentSchema.pre('save', function(next) {
+    this.increment();
+    return next();
+  });
 
 export const PaymentModel = model<IPayment>("Payment",paymentSchema);

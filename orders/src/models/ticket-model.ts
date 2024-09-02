@@ -17,6 +17,11 @@ const ticketSchema = new Schema<ITicket>({
         type: Number,
         required: true
     }
-})
+},{versionKey:"version"})
+
+ticketSchema.pre('save', function(next) {
+    this.increment();
+    return next();
+  });
 
 export const TicketModel = mongoose.model<ITicket>('Ticket',ticketSchema)

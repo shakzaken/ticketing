@@ -8,6 +8,7 @@ interface IOrder{
     status: OrderStatus;
     price: number;
     userId: string;
+    version:number;
 }
 
 
@@ -25,6 +26,11 @@ const orderSchema = new Schema<IOrder>({
         type: String,
         required: true
     }
-})
+},{versionKey:"version"})
+
+orderSchema.pre('save', function(next) {
+    this.increment();
+    return next();
+  });
 
 export const OrderModel = mongoose.model("Order",orderSchema);

@@ -41,6 +41,7 @@ router.post("/orders",requireAuth,async (req,res) => {
             userId: order.userId,
             expiration: order.expiration,
             status: order.status,
+            version:order.version,
             ticket:{
                 id: ticket._id,
                 title: ticket.title,

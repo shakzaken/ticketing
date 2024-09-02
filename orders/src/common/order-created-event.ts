@@ -8,6 +8,7 @@ export interface OrderCreatedData {
     expiration:Date,
     status: OrderStatus,
     userId: string,
+    version:number,
     ticket:{
         id: string,
         price: number,

@@ -12,6 +12,11 @@ export class OrderUpdatedListener extends Listener<OrderUpdatedEvent>{
         
         try{
             const order = await OrderModel.findById(data.id);
+            if(order.version !== data.version -1){
+                console.error("order version is incorrect");
+                return;
+            }
+
             if(order.status == OrderStatus.Cancelled || order.status == OrderStatus.Completed){
                 console.log("order is cancelled or completed");
                 return msg.ack();

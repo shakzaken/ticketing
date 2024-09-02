@@ -7,7 +7,8 @@ export interface IOrder {
     ticket: ITicket,
     userId: string,
     expiration: Date,
-    status: OrderStatus
+    status: OrderStatus,
+    version:number
 
 }
 
@@ -27,7 +28,13 @@ const orderSchema = new Schema<IOrder>({
     status:{
         type: String,
         required: true
-    }
-})
+    },
+    
+},{versionKey:"version"})
+
+orderSchema.pre('save', function(next) {
+    this.increment();
+    return next();
+  });
 
 export const OrderModel = mongoose.model<IOrder>('Order',orderSchema);

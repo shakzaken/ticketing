@@ -3,7 +3,8 @@ import { Subjects } from "./subjects"
 
 export interface OrderUpdatedData {
     id: string,
-    status: OrderStatus
+    status: OrderStatus,
+    version:number
     ticket:{
         id: string,
         title: string,

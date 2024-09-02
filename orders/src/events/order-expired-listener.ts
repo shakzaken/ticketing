@@ -34,6 +34,7 @@ export class OrderExpiredListener extends Listener<OrderExpiredEvent>{
         new OrderUpdatedPublisher(natsWrapper.client).publish({
             id: order.id,
             status: order.status,
+            version: order.version,
             ticket:{
                 id: order.ticket._id,
                 title: order.ticket.title,
