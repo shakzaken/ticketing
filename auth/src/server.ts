@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 import { currentUserRouter } from "./routes/current-user";
 import { signoutRouter } from "./routes/signout";
 import cookieSession from "cookie-session";
+import cors from "cors";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cookieSession({
     name:"session",
     keys:['key1','key2']
 }))
+app.use(cors())
 
 app.use(registerRouter);
 app.use(loginRouter);
@@ -21,9 +23,9 @@ app.use(currentUserRouter);
 app.use(signoutRouter);
 
 
-app.listen(3000, async () => {
+app.listen(3006, async () => {
     
     await mongoose.connect("mongodb://127.0.0.1:27017/auth")
     console.log("connected to mongodb")
-    console.log("Auth application listen on port 3000")
+    console.log("Auth application listen on port 3006")
 });

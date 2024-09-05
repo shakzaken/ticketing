@@ -11,6 +11,8 @@ import { natsWrapper } from "./nats-wrapper";
 import { OrderUpdatedListener } from "./events/order-updated-listener";
 import { OrderCreatedListener } from "./events/order-created-listener";
 
+import cors from "cors";
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -18,6 +20,7 @@ app.use(cookieSession({
     name:"session",
     keys:['key1','key2']
 }))
+app.use(cors());
 
 app.use(createTicketRouter)
 app.use(getTicketsRouter)

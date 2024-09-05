@@ -1,0 +1,23 @@
+.navbar{
+
+
+    .nav-left{
+        display: flex;
+        width:70%;
+        justify-content: center;
+    }
+
+    .nav-right{
+        display: flex;
+        width:30%;
+        justify-content: center;
+    }
+
+    .nav-block{
+        width:100px;
+        display: inline-flex;
+        align-items: center;
+
+        
+    }
+}

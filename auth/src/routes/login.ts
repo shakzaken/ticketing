@@ -29,7 +29,7 @@ router.post("/login",async (req,res) => {
         //@ts-ignore
         req.session.token = token; 
     
-        return res.status(200).send("User logged in successfully");
+        return res.status(200).send({token});
     }
     catch(err){
         res.status(500).send("something wrong happend...")

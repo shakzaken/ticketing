@@ -9,7 +9,8 @@ import { TicketCreatedListener } from "./events/ticket-created-listener";
 import { createOrderRouter } from "./routes/create-order-route";
 import { OrderExpiredListener } from "./events/order-expired-listener";
 import { PaymentSucceedListener } from "./events/payment-succeed-listener";
-
+import cors from "cors";
+import { getOrdersRouter } from "./routes/get-orders-route";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cookieSession({
     name:"session",
     keys:['key1','key2']
 }))
+app.use(cors());
 
 
 setup();
@@ -27,7 +29,7 @@ app.listen(3002, async () => {
 });
 
 app.use(createOrderRouter);
-
+app.use(getOrdersRouter);
 
 
 async function setup(){

@@ -8,6 +8,7 @@ import { natsWrapper } from "./nats-wrapper";
 import { OrderCreatedListener } from "./events/order-created-listener";
 import { OrderUpdatedListener } from "./events/order-updated-listener";
 import { createPaymentRouter } from "./routes/create-payments-route";
+import cors from "cors";
 
 
 
@@ -18,6 +19,7 @@ app.use(cookieSession({
     name:"session",
     keys:['key1','key2']
 }))
+app.use(cors());
 
 
 app.use(createPaymentRouter);
