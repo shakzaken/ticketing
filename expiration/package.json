@@ -13,6 +13,7 @@
     "@types/bull": "^4.10.0",
     "@types/node": "^22.5.0",
     "bull": "^4.16.1",
+    "kafkajs": "^2.2.4",
     "node-nats-streaming": "^0.3.2"
   },
   "devDependencies": {

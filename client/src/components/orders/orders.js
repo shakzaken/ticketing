@@ -24,9 +24,7 @@ export const Orders = (props) => {
             })
     },[])
 
-    const ordersList = () => {
-        return orders.map(order => <OrderItem order={order}  />)
-    }
+
 
 
     return <div className="orders-page">

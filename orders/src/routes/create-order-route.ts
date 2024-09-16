@@ -6,6 +6,8 @@ import { OrderModel } from "../models/order-model";
 import { OrderStatus } from "../common/order-status";
 import { OrderCreatedPublisher } from "../events/order-created-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { orderCreatedProducer } from "../kafka/order-created-producer";
+import { kafkaClient } from "../kafka-wrapper";
 const router = express.Router();
 
 const expirationTime = 1000 * 60 * 1;
@@ -36,7 +38,20 @@ router.post("/orders",requireAuth,async (req,res) => {
         })
         await order.save();
 
-        new OrderCreatedPublisher(natsWrapper.client).publish({
+        // new OrderCreatedPublisher(natsWrapper.client).publish({
+        //     id: order._id.toString(),
+        //     userId: order.userId,
+        //     expiration: order.expiration,
+        //     status: order.status,
+        //     version:order.version,
+        //     ticket:{
+        //         id: ticket._id,
+        //         title: ticket.title,
+        //         price: ticket.price
+        //     }
+        // })
+
+        orderCreatedProducer.send({
             id: order._id.toString(),
             userId: order.userId,
             expiration: order.expiration,
@@ -47,7 +62,8 @@ router.post("/orders",requireAuth,async (req,res) => {
                 title: ticket.title,
                 price: ticket.price
             }
-        })
+        },order._id.toString())
+
         return res.status(201).send(order);
 
 

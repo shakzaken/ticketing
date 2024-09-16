@@ -4,6 +4,10 @@ import { TicketModel } from "../models/ticket-model";
 import { UserDto } from "../common/user-dto";
 import { TicketCreatedPublisher } from "../events/ticket-created-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { KProducer } from "../common/k-producer";
+import { createTicketProducer } from "../kafka/ticket-created-producer";
+import { kafkaClient } from "../kafka-wrapper";
+
 
 const router = express.Router();
 
@@ -22,13 +26,23 @@ router.post("/tickets",requireAuth, async (req,res) => {
         })
         await ticket.save();
         
-        new TicketCreatedPublisher(natsWrapper.client).publish({
+        // new TicketCreatedPublisher(natsWrapper.client).publish({
+        //     id: ticket._id,
+        //     title: ticket.title,
+        //     price: ticket.price,
+        //     userId: ticket.userId,
+        //     orderId: null
+        // });
+
+  
+        
+        await createTicketProducer.send({
             id: ticket._id,
             title: ticket.title,
             price: ticket.price,
             userId: ticket.userId,
             orderId: null
-        });
+        },ticket._id.toString())
        
         res.status(201).send(ticket)
 

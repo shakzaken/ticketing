@@ -11,6 +11,15 @@ import { OrderExpiredListener } from "./events/order-expired-listener";
 import { PaymentSucceedListener } from "./events/payment-succeed-listener";
 import cors from "cors";
 import { getOrdersRouter } from "./routes/get-orders-route";
+import { kafkaClient } from "./kafka-wrapper";
+import { TicketCreatedConsumer } from "./kafka/ticket-created-consumer";
+import { OrderExpiredConsumer } from "./kafka/order-expired-consumer";
+import { PaymentSucceedConsumer } from "./kafka/payment-succeed-consumer";
+import { orderCreatedProducer } from "./kafka/order-created-producer";
+import { orderUpdatedProducer } from "./kafka/order-updated-producer";
+
+
+
 
 const app = express();
 
@@ -32,23 +41,22 @@ app.use(createOrderRouter);
 app.use(getOrdersRouter);
 
 
+
+
 async function setup(){
 
     await mongoose.connect("mongodb://127.0.0.1:27017/orders")
     console.log("connected to mongodb")
 
-    const connectionId = randomBytes(4).toString('hex');
-    await natsWrapper.connect("ticketing",connectionId,'http://localhost:4222');
 
 
-    natsWrapper.client.on('close', ()=> {
-        console.log("NATS connection closed!");
-        process.exit();
-    })
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM",() => natsWrapper.client.close());
+    new TicketCreatedConsumer(kafkaClient).run();
+    new OrderExpiredConsumer(kafkaClient).run();
+    new PaymentSucceedConsumer(kafkaClient).run();
 
-    new TicketCreatedListener(natsWrapper.client).listen();
-    new OrderExpiredListener(natsWrapper.client).listen();
-    new PaymentSucceedListener(natsWrapper.client).listen();
+
+    orderCreatedProducer.connect();
+    orderUpdatedProducer.connect();
+
+    
 }

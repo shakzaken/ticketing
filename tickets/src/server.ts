@@ -11,7 +11,12 @@ import { natsWrapper } from "./nats-wrapper";
 import { OrderUpdatedListener } from "./events/order-updated-listener";
 import { OrderCreatedListener } from "./events/order-created-listener";
 
+import { OrderCreatedConsumer } from "./kafka/order-created-consumter";
+import { OrderUpdatedConsumer } from "./kafka/order-updated-consumer";
+
 import cors from "cors";
+import { kafkaClient } from "./kafka-wrapper";
+import { createTicketProducer } from "./kafka/ticket-created-producer";
 
 const app = express();
 
@@ -40,15 +45,23 @@ async function setup(){
     await mongoose.connect("mongodb://127.0.0.1:27017/tickets")
     console.log("connected to mongodb")
 
-    const connectionId = randomBytes(4).toString('hex');
-    await natsWrapper.connect("ticketing",connectionId,'http://localhost:4222');  
-    natsWrapper.client.on('close', ()=> {
-        console.log("NATS connection closed!");
-        process.exit();
-    })
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM",() => natsWrapper.client.close());
+    // const connectionId = randomBytes(4).toString('hex');
+    // await natsWrapper.connect("ticketing",connectionId,'http://localhost:4222');  
+    // natsWrapper.client.on('close', ()=> {
+    //     console.log("NATS connection closed!");
+    //     process.exit();
+    // })
+    // process.on("SIGINT", () => natsWrapper.client.close());
+    // process.on("SIGTERM",() => natsWrapper.client.close());
 
-    new OrderCreatedListener(natsWrapper.client).listen();
-    new OrderUpdatedListener(natsWrapper.client).listen();
+    // new OrderCreatedListener(natsWrapper.client).listen();
+    // new OrderUpdatedListener(natsWrapper.client).listen();
+
+
+    // kafka
+
+    new OrderCreatedConsumer(kafkaClient).run();
+    new OrderUpdatedConsumer(kafkaClient).run();
+
+    createTicketProducer.connect();
 }

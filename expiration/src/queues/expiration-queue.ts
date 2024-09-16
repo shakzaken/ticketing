@@ -1,6 +1,8 @@
 import Queue from "bull" 
 import { OrderExpiredPublisher } from "../events/order-expired-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { orderExpiredProducer } from "../kafka/order-expired-producer";
+import { kafkaClient } from "../kafka-wrapper";
 
 
 export interface Payload{
@@ -17,5 +19,9 @@ export const expirationQueue = new Queue<Payload>(
 );
 
 expirationQueue.process(async (job) => {
-    new OrderExpiredPublisher(natsWrapper.client).publish({orderId: job.data.orderId});
+
+    orderExpiredProducer.send({
+        orderId: job.data.orderId
+    },job.data.orderId.toString())
+  //  new OrderExpiredPublisher(natsWrapper.client).publish({orderId: job.data.orderId});
 });

@@ -4,6 +4,8 @@ import { PaymentModel } from "../models/payment-model";
 import { OrderStatus } from "../common/order-status";
 import { PaymentSucceedPublisher } from "../events/payment-succeed-publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { paymentSucceedProducer } from "../kafka/payment-succeed-producer";
+import { kafkaClient } from "../kafka-wrapper";
 const router = express.Router();
 
 
@@ -26,10 +28,15 @@ router.post("/payments",async (req,res) => {
     })
     await payment.save();
 
-    new PaymentSucceedPublisher(natsWrapper.client).publish({
+    // new PaymentSucceedPublisher(natsWrapper.client).publish({
+    //     orderId:orderId,
+    //     paymentId: payment._id
+    // });
+
+    paymentSucceedProducer.send({
         orderId:orderId,
         paymentId: payment._id
-    });
+    },payment._id.toString())
     
     res.status(200).send("payment succeed");
 
