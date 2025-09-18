@@ -11,7 +11,7 @@ It follows a distributed architecture with multiple services, each handling a sp
 - **Expiration Service** – monitors and automatically cancels expired orders.
 
 The services communicate asynchronously using **Apache Kafka** for event-driven communication, ensuring scalability and resilience.  
-Data persistence is handled via **MongoDB** and **Redis** is used for caching and fast access.  
+Data persistence is handled via **MongoDB** 
 The app is designed with **Node.js, Express, and TypeScript** for robust backend development.
 
 ---
@@ -20,7 +20,7 @@ The app is designed with **Node.js, Express, and TypeScript** for robust backend
 - **Node.js + Express + TypeScript** – main backend framework for building services.
 - **Apache Kafka** – message broker for event-driven microservices communication.
 - **MongoDB** – NoSQL database for storing tickets, users, and orders.
-- **Redis** – in-memory data store used for caching and managing order expiration.
+- **Redis** – in-memory data store used for managing order expiration.
 - **Microservices Architecture** – each domain runs as an independent service.
 - **Docker / Kubernetes (if configured)** – containerization and orchestration for deploying services at scale.
 - **JWT (JSON Web Tokens)** – for secure authentication and service-to-service communication.
@@ -73,7 +73,5 @@ The system exposes RESTful APIs for each service. Below are the main endpoints:
 📚 Notes
 
 - Each service runs independently and communicates via Kafka.
-
 - Environment variables (DB connections, Kafka config, JWT secret, etc.) must be configured before running.
-
 - Designed to be cloud-ready and horizontally scalable.
